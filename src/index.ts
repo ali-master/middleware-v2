@@ -59,17 +59,17 @@ async function bootstrap() {
       perMessageDeflate: true,
     },
   })
-    .trace(async ({ handle }) => {
+    .trace(async ({ handle, }) => {
       const { children } = await handle;
       if (!children.length) {
         const { time: start, end, name } = await handle;
-        const duration = Math.abs((await end) - start).toFixed(3);
+        const duration = Math.abs((await end) - start).toFixed(5);
 
         SystemLogger.info(`Request ${name} took ${duration}ms`);
       } else {
         for (const child of children) {
           const { time: start, end, name } = await child;
-          const duration = Math.abs((await end) - start).toFixed(3);
+          const duration = Math.abs((await end) - start).toFixed(5);
 
           SystemLogger.info(`${name} took ${duration}ms`);
         }
@@ -98,22 +98,19 @@ async function bootstrap() {
         message: "Internal Server Error",
       };
     })
-    .group("/api", (app) => {
-      return app
-        .all("/proxy", function proxy({ ProxyService, body: reqBody }) {
-          const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
-          return ProxyService.proxy({
-            body,
-            headers,
-            reqUrl,
-            method: method as Method,
-          });
-        })
-        .get("/market-pair/:pair", function getMarketPair({ ProxyService, params }) {
-          const { pair } = params;
-
-          return ProxyService.getMarketPair(pair);
-        });
+    .all("/proxy", function proxy({ ProxyService, body: reqBody }) {
+      const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
+      return ProxyService.proxy({
+        body,
+        headers,
+        reqUrl,
+        method: method as Method,
+      });
+    })
+    .get("/market-pair/:pair", function getMarketPair({ ProxyService, params }) {
+      const { pair } = params;
+      
+      return ProxyService.getMarketPair(pair);
     })
     .ws("/socket", {
       open: (ws) => {
