@@ -165,7 +165,15 @@ async function bootstrap() {
        * @description This event is triggered when the socket receives a message from Kucoin
        */
       kucoin.onEvent("all-tickers", (ticker) => {
-        server.publish(IoTokenRoom.PRICES, JSON.stringify(ticker));
+        const message = {
+          "tokenPrice": {
+            "pair": `${ticker.message.data.baseAsset}-${ticker.message.data.quoteAsset}`,
+            "priceNumber": ticker.message.data.price,
+          },
+          "exchange": "kucoin"
+        };
+        
+        server.publish(IoTokenRoom.PRICES, JSON.stringify(message));
       });
 
       // Handle shutdown

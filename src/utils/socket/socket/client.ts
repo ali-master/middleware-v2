@@ -202,20 +202,24 @@ export class KucoinWsClient extends EventEmitter {
       const [baseAsset, quoteAsset] = payload.subject.split("-");
       this.emitEvent(
         "all-tickers",
-        Object.assign({}, payload.data, {
-          baseAsset,
-          quoteAsset,
-        }),
+        {
+          data: Object.assign({}, payload.data, {
+            baseAsset,
+            quoteAsset,
+          }),
+        }
       );
       return;
     } else if (payload.subject === "trade.ticker") {
       const [baseAsset, quoteAsset] = payload.topic.split(":")[1].split("-");
       this.emitEvent(
         payload.subject,
-        Object.assign({}, payload.data, {
-          baseAsset,
-          quoteAsset,
-        }),
+        {
+          data: Object.assign({}, payload.data, {
+            baseAsset,
+            quoteAsset,
+          })
+        },
       );
       return;
     }
