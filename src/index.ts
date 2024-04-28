@@ -83,7 +83,7 @@ async function bootstrap() {
         }
       }
     })
-    .group("/api/v1", (app) => {
+    .group("/v1", (app) => {
       return app
         .get("health-check", () => {
           return { status: "up", version: appVersion };
@@ -113,7 +113,7 @@ async function bootstrap() {
       };
     })
     .onResponse(async ({ path, body }) => {
-      if (path.includes("/proxy")) {
+      if (path.includes("proxy")) {
         const { reqUrl, method } = body as Record<string, string>;
         incrementCounter({
           method,
