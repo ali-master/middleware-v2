@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: middleware
+    restart: always
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/v1/health-check" ]
+      interval: 10s
+      start_period: 30s
+      retries: 10
+      timeout: 5s
+    environment:
+        - PORT=3000
+    ports:
+      - "3000:3000"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - web-root:/var/www/html
+      - ./scripts/nginx.conf:/etc/nginx/conf.d
+    depends_on:
+      - middleware
+    networks:
+      - local-network
+
+volumes:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/node-app
+      o: bind
+
+networks:
+  local-network:
+    driver: bridge
