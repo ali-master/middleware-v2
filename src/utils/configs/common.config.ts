@@ -14,8 +14,6 @@ export class CommonConfig {
   static readonly PORT = envInstance.get("PORT").required().asPortNumber();
   static readonly IS_DEVELOPMENT = CommonConfig.ENV === "development";
   static readonly IS_PRODUCTION = CommonConfig.ENV === "production";
-  static readonly MAX_LISTENERS = envInstance.get("MAX_LISTENERS").required().asIntPositive();
-  static readonly MIDDLEWARE_WS_URL = envInstance.get("MIDDLEWARE_WS_URL").required().asArray();
   static readonly KUCOIN_BASE_URL = envInstance.get("KUCOIN_BASE_URL").required().asUrlString();
   static readonly KUCOIN_OPENAPI_BASE_URL = envInstance
     .get("KUCOIN_OPENAPI_BASE_URL")

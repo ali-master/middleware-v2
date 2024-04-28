@@ -5,3 +5,4 @@ export * from "./random-id.util";
 export * from "./setup-signals.util";
 export * from "./common.util";
 export * from "./max-request-timeout-policy.util";
+export * from "./analytics.util";

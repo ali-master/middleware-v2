@@ -8,8 +8,16 @@ import { cors } from "@elysiajs/cors";
 import { serverTiming } from "@elysiajs/server-timing";
 import { version as appVersion } from "../package.json";
 import { KucoinWsClient } from "@root/utils/socket/socket";
-import { CommonConfig, SystemLogger, serviceName, setupSignals } from "@root/utils";
+import {
+  CommonConfig,
+  SystemLogger,
+  serviceName,
+  setupSignals,
+  incrementCounter,
+  monitoring,
+} from "@root/utils";
 // Exceptions
+
 import { TimeoutException } from "@root/exceptions";
 // Enums
 import { IoTokenRoom } from "@root/enums/token.enum";
@@ -59,7 +67,7 @@ async function bootstrap() {
       perMessageDeflate: true,
     },
   })
-    .trace(async ({ handle, }) => {
+    .trace(async ({ handle }) => {
       const { children } = await handle;
       if (!children.length) {
         const { time: start, end, name } = await handle;
@@ -76,9 +84,15 @@ async function bootstrap() {
       }
     })
     .group("/api/v1", (app) => {
-      return app.get("health-check", () => {
-        return { status: "up", version: appVersion };
-      });
+      return app
+        .get("health-check", () => {
+          return { status: "up", version: appVersion };
+        })
+        .get("metrics", ({ set }) => {
+          set.headers["Content-Type"] = monitoring.contentType;
+
+          return monitoring.metrics();
+        });
     })
     .decorate({
       ProxyService: new ProxyService(),
@@ -98,6 +112,15 @@ async function bootstrap() {
         message: "Internal Server Error",
       };
     })
+    .onResponse(async ({ path, body }) => {
+      if (path.includes("/proxy")) {
+        const { reqUrl, method } = body as Record<string, string>;
+        incrementCounter({
+          method,
+          route: reqUrl,
+        });
+      }
+    })
     .all("/proxy", function proxy({ ProxyService, body: reqBody }) {
       const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
       return ProxyService.proxy({
@@ -109,7 +132,7 @@ async function bootstrap() {
     })
     .get("/market-pair/:pair", function getMarketPair({ ProxyService, params }) {
       const { pair } = params;
-      
+
       return ProxyService.getMarketPair(pair);
     })
     .ws("/socket", {
@@ -166,13 +189,13 @@ async function bootstrap() {
        */
       kucoin.onEvent("all-tickers", (ticker) => {
         const message = {
-          "tokenPrice": {
-            "pair": `${ticker.message.data.baseAsset}-${ticker.message.data.quoteAsset}`,
-            "priceNumber": ticker.message.data.price,
+          tokenPrice: {
+            pair: `${ticker.message.data.baseAsset}-${ticker.message.data.quoteAsset}`,
+            priceNumber: ticker.message.data.price,
           },
-          "exchange": "kucoin"
+          exchange: "kucoin",
         };
-        
+
         server.publish(IoTokenRoom.PRICES, JSON.stringify(message));
       });
 
