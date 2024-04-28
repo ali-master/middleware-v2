@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "inlineSourceMap": false,
+    "sourceMap": true,
+    "incremental": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "moduleDetection": "force",
+    "allowSyntheticDefaultImports": true, // To provide backwards compatibility, Node.js allows you to import most CommonJS packages with a default import. This flag tells TypeScript that it's okay to use import on CommonJS modules.
+    "pretty": true,
+    "newLine": "lf",
+    "stripInternal": true,
+    "noImplicitReturns": false,
+    "noImplicitOverride": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noEmitOnError": true,
+    "useDefineForClassFields": true,
+    "baseUrl": ".",
+    "target": "ES2021",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "types": ["bun-types"],
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@root": ["./src"],
+      "@root/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.*"],
+  "exclude": ["node_modules", "dist", "build", "coverage", "test", "tests", "spec", "specs"]
+}
