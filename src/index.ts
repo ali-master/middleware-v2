@@ -13,8 +13,9 @@ import {
   SystemLogger,
   serviceName,
   setupSignals,
-  incrementCounter,
+  incrementRequestCounter,
   monitoring,
+  incrementResponseDuration,
 } from "@root/utils";
 // Exceptions
 
@@ -75,12 +76,20 @@ async function bootstrap() {
         const duration = Math.abs((await end) - start);
 
         SystemLogger.info(`Request ${name ?? "unknown"} took ${duration}ms`);
+        incrementResponseDuration({
+          duration,
+          handler: name ?? "unknown",
+        });
       } else {
         for (const child of children) {
           const { time: start, end, name } = await child;
           const duration = Math.abs((await end) - start);
 
           SystemLogger.info(`Request ${name ?? "unknown"} took ${duration}ms`);
+          incrementResponseDuration({
+            duration,
+            handler: name ?? "unknown",
+          });
         }
       }
     })
@@ -104,12 +113,12 @@ async function bootstrap() {
     .onResponse(async ({ path, body, request }) => {
       if (path.includes("proxy")) {
         const { reqUrl, method } = body as Record<string, string>;
-        incrementCounter({
+        incrementRequestCounter({
           method,
           route: reqUrl,
         });
       } else {
-        incrementCounter({
+        incrementRequestCounter({
           method: request.method,
           route: request.url,
         });
