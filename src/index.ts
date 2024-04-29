@@ -74,13 +74,13 @@ async function bootstrap() {
         const { time: start, end, name } = await handle;
         const duration = Math.abs((await end) - start);
 
-        SystemLogger.info(`Request ${name} took ${duration}ms`);
+        SystemLogger.info(`Request ${name ?? "unknown"} took ${duration}ms`);
       } else {
         for (const child of children) {
           const { time: start, end, name } = await child;
           const duration = Math.abs((await end) - start);
 
-          SystemLogger.info(`${name} took ${duration}ms`);
+          SystemLogger.info(`Request ${name ?? "unknown"} took ${duration}ms`);
         }
       }
     })
