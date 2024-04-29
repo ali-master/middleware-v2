@@ -61,6 +61,7 @@ async function bootstrap() {
   const app = new Elysia({
     name: serviceName,
     forceErrorEncapsulation: true,
+    prefix: "/api",
     websocket: {
       sendPings: true,
       idleTimeout: 960,
