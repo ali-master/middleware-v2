@@ -71,13 +71,13 @@ async function bootstrap() {
       const { children } = await handle;
       if (!children.length) {
         const { time: start, end, name } = await handle;
-        const duration = Math.abs((await end) - start).toFixed(5);
+        const duration = Math.abs((await end) - start);
 
         SystemLogger.info(`Request ${name} took ${duration}ms`);
       } else {
         for (const child of children) {
           const { time: start, end, name } = await child;
-          const duration = Math.abs((await end) - start).toFixed(5);
+          const duration = Math.abs((await end) - start);
 
           SystemLogger.info(`${name} took ${duration}ms`);
         }
@@ -85,8 +85,16 @@ async function bootstrap() {
     })
     .group("/v1", (app) => {
       return app
-        .get("health-check", () => {
-          return { status: "up", version: appVersion };
+        .get("health-check", function systemHealthCheck() {
+          return {
+            status: "up",
+            version: appVersion,
+          };
+        })
+        .get("/health-check/ws", function wsHealthCheck() {
+          return {
+            status: kucoin.isSocketOpen ? "up" : "down",
+          };
         })
         .get("metrics", ({ set }) => {
           set.headers["Content-Type"] = monitoring.contentType;
