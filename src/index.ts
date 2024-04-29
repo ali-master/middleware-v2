@@ -126,10 +126,16 @@ async function bootstrap() {
             version: appVersion,
           };
         })
-        .get("/health-check/ws", function wsHealthCheck() {
-          return {
-            status: kucoin.isSocketOpen ? "up" : "down",
-          };
+        .get("/health-check/ws", function wsHealthCheck({ error }) {
+          if (kucoin.isSocketOpen) {
+            return {
+              status: "up",
+            };
+          }
+
+          return error(500, {
+            status: "down",
+          });
         })
         .get("metrics", function metrics({ set }) {
           set.headers["Content-Type"] = monitoring.contentType;
