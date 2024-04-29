@@ -84,28 +84,6 @@ async function bootstrap() {
         }
       }
     })
-    .group("/v1", (app) => {
-      return app
-        .get("health-check", function systemHealthCheck() {
-          return {
-            status: "up",
-            version: appVersion,
-          };
-        })
-        .get("/health-check/ws", function wsHealthCheck() {
-          return {
-            status: kucoin.isSocketOpen ? "up" : "down",
-          };
-        })
-        .get("metrics", ({ set }) => {
-          set.headers["Content-Type"] = monitoring.contentType;
-
-          return monitoring.metrics();
-        });
-    })
-    .decorate({
-      ProxyService: new ProxyService(),
-    })
     .onError(({ error, request }) => {
       SystemLogger.error(
         `Error occurred while processing request: ${request.url} with error: ${error}`,
@@ -136,6 +114,28 @@ async function bootstrap() {
           route: request.url,
         });
       }
+    })
+    .decorate({
+      ProxyService: new ProxyService(),
+    })
+    .group("/v1", (app) => {
+      return app
+        .get("health-check", function systemHealthCheck() {
+          return {
+            status: "up",
+            version: appVersion,
+          };
+        })
+        .get("/health-check/ws", function wsHealthCheck() {
+          return {
+            status: kucoin.isSocketOpen ? "up" : "down",
+          };
+        })
+        .get("metrics", function metrics({ set }) {
+          set.headers["Content-Type"] = monitoring.contentType;
+
+          return monitoring.metrics();
+        });
     })
     .all("/proxy", function proxy({ ProxyService, body: reqBody }) {
       const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
