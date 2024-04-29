@@ -98,7 +98,9 @@ async function bootstrap() {
       ProxyService: new ProxyService(),
     })
     .onError(({ error, request }) => {
-      SystemLogger.error(error, `Error occurred while processing request: ${request.url}`);
+      SystemLogger.error(
+        `Error occurred while processing request: ${request.url} with error: ${error}`,
+      );
       const isTimeout = error.stack.startsWith(TimeoutException.name);
       if (isTimeout) {
         return {
@@ -112,12 +114,17 @@ async function bootstrap() {
         message: "Internal Server Error",
       };
     })
-    .onResponse(async ({ path, body }) => {
+    .onResponse(async ({ path, body, request }) => {
       if (path.includes("proxy")) {
         const { reqUrl, method } = body as Record<string, string>;
         incrementCounter({
           method,
           route: reqUrl,
+        });
+      } else {
+        incrementCounter({
+          method: request.method,
+          route: request.url,
         });
       }
     })
