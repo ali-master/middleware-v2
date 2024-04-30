@@ -91,7 +91,16 @@ export class ProxyService {
         Http.client.fetch,
         this.timeoutPolicy,
         Http.response.json,
-        Effect.andThen((result) => new OrderbookSymbolPriceDto(result).toJSON()),
+        Effect.andThen((result) => {
+          if ((result as any).data) {
+            return new OrderbookSymbolPriceDto(result).toJSON();
+          }
+
+          return {
+            symbol,
+            price: null,
+          };
+        }),
       );
 
     const { price } = await Effect.runPromise(req);
