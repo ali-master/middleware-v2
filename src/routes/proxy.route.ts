@@ -6,7 +6,6 @@ import {
   getMaxRequestTimeoutPolicy,
 } from "@root/utils";
 import * as Http from "@effect/platform/HttpClient";
-import { reqStringify } from "@root/utils/request-stringify.util";
 // Types
 import type { Method } from "@effect/platform/src/Http/Method";
 // DTOs
@@ -53,7 +52,7 @@ export class ProxyService {
    */
   async proxy(ctx: { reqUrl: string; method: Method; body: any; headers: any }) {
     this.logger.info({
-      data: reqStringify(ctx),
+      data: ctx,
     });
     const req = Http.request
       .make(ctx.method)(ctx.reqUrl, {
@@ -78,7 +77,7 @@ export class ProxyService {
    */
   async getMarketPair(pair: string) {
     this.logger.info({
-      data: reqStringify({ pair }),
+      data: { pair },
     });
 
     const symbol = addDashBetweenPair(pair);
