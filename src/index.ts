@@ -161,7 +161,7 @@ async function bootstrap() {
         method: method as Method,
       });
     })
-    .get("/market-pair/:pair", function getMarketPair({ ProxyService, params }) {
+    .get("/kucoin/get-market/:pair", function getMarketPair({ ProxyService, params }) {
       const { pair } = params;
 
       return ProxyService.getMarketPair(pair);
