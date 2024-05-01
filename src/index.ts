@@ -76,7 +76,7 @@ async function bootstrap() {
         const { time: start, end, name } = await handle;
         const duration = Math.abs((await end) - start);
 
-        SystemLogger.info(`Request ${name ?? "unknown"} took ${duration}ms`);
+        SystemLogger.info(`Request ${name || "unknown"} took ${duration}ms`);
         incrementResponseDuration({
           duration,
           handler: name ?? "unknown",
@@ -86,7 +86,7 @@ async function bootstrap() {
           const { time: start, end, name } = await child;
           const duration = Math.abs((await end) - start);
 
-          SystemLogger.info(`Request ${name ?? "unknown"} took ${duration}ms`);
+          SystemLogger.info(`Request ${name || "unknown"} took ${duration}ms`);
           incrementResponseDuration({
             duration,
             handler: name ?? "unknown",
@@ -111,18 +111,31 @@ async function bootstrap() {
         message: "Internal Server Error",
       };
     })
-    .onResponse(async ({ path, body, request }) => {
+    .onResponse(async ({ path, body, headers, request }) => {
       if (path.includes("proxy")) {
-        const { reqUrl, method } = body as Record<string, string>;
+        const {
+          reqUrl,
+          method,
+          body: resBody,
+          headers,
+        } = body as unknown as Record<string, string>;
         incrementRequestCounter({
           method,
           route: reqUrl,
         });
+        SystemLogger.info(
+          { reqRoute: request.url, reqMethod: request.method, resBody, headers },
+          `[${method}] ${reqUrl}`,
+        );
       } else {
         incrementRequestCounter({
           method: request.method,
           route: request.url,
         });
+        SystemLogger.info(
+          { reqRoute: request.url, reqMethod: request.method, resBody: body, headers },
+          `[${request.method}] ${request.url}`,
+        );
       }
     })
     .decorate({
