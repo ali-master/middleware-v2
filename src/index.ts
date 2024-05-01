@@ -166,15 +166,29 @@ async function bootstrap() {
           return monitoring.metrics();
         });
     })
-    .all("/proxy", function proxy({ ProxyService, body: reqBody }) {
-      const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
-      return ProxyService.proxy({
-        body,
-        headers,
-        reqUrl,
-        method: method as Method,
-      });
-    })
+    .all(
+      "/proxy",
+      function proxy({ ProxyService, body: reqBody }) {
+        const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
+        return ProxyService.proxy({
+          body,
+          headers,
+          reqUrl,
+          method: method as Method,
+        });
+      },
+      {
+        afterHandle({ response, request }) {
+          SystemLogger.info(
+            {
+              response,
+            },
+            `[${request.method}] ${request.url}`,
+          );
+          return response;
+        },
+      },
+    )
     .get("/kucoin/get-market/:pair", function getMarketPair({ ProxyService, params }) {
       const { pair } = params;
 
