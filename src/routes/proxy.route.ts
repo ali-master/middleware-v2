@@ -60,11 +60,10 @@ export class ProxyService {
       // @ts-ignore
       reqBuilder.setBody(JSON.stringify(reqBody));
     }
-    if (headers) {
-      reqBuilder.setHeaders(headers);
-    }
     const req = reqBuilder
-      .make(method)(reqUrl)
+      .make(method)(reqUrl, {
+        headers,
+      })
       .pipe(Http.client.fetch, this.timeoutPolicy, Http.response.json);
 
     return Effect.runPromise(req);
