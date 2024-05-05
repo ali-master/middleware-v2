@@ -62,7 +62,6 @@ export class ProxyService {
         // @ts-ignore
         body,
         headers: headers,
-        acceptJson: true,
       })
       .pipe(Http.client.fetch, this.timeoutPolicy, Http.response.json);
 
