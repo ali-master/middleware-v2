@@ -2,6 +2,7 @@ import { Effect } from "effect";
 import {
   addDashBetweenPair,
   CommonConfig,
+  filterSensitiveProps,
   getMaxRequestTimeoutPolicy,
   SystemLogger,
 } from "@root/utils";
@@ -52,7 +53,7 @@ export class ProxyService {
    */
   async proxy(ctx: { reqUrl: string; method: Method; body: any; headers: any }) {
     this.logger.info({
-      data: ctx,
+      data: filterSensitiveProps(ctx),
     });
     const { method, headers, reqUrl, body } = ctx;
     const fetchConfig = {

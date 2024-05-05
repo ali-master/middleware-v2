@@ -12,6 +12,7 @@
     "version": "bun version"
   },
   "dependencies": {
+    "@amaabca/sensitive-param-filter": "^1.2.8",
     "@effect/platform": "^0.50.5",
     "@effect/platform-bun": "^0.33.10",
     "@elysiajs/cors": "^1.0.2",

@@ -16,6 +16,7 @@ import {
   incrementRequestCounter,
   monitoring,
   incrementResponseDuration,
+  filterSensitiveProps,
 } from "@root/utils";
 // Exceptions
 
@@ -124,7 +125,12 @@ async function bootstrap() {
           route: reqUrl,
         });
         SystemLogger.info(
-          { reqRoute: request.url, reqMethod: request.method, resBody, headers },
+          {
+            reqRoute: request.url,
+            reqMethod: request.method,
+            resBody,
+            headers: filterSensitiveProps(headers),
+          },
           `[${method}] ${reqUrl}`,
         );
       } else {
@@ -133,7 +139,12 @@ async function bootstrap() {
           route: request.url,
         });
         SystemLogger.info(
-          { reqRoute: request.url, reqMethod: request.method, resBody: body, headers },
+          {
+            reqRoute: request.url,
+            reqMethod: request.method,
+            resBody: body,
+            headers: filterSensitiveProps(headers),
+          },
           `[${request.method}] ${request.url}`,
         );
       }
@@ -172,7 +183,7 @@ async function bootstrap() {
         const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
         return ProxyService.proxy({
           body,
-          headers,
+          headers: filterSensitiveProps(headers),
           reqUrl,
           method: method as Method,
         });
