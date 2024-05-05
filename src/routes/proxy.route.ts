@@ -54,10 +54,12 @@ export class ProxyService {
     this.logger.info({
       data: ctx,
     });
+    const { reqUrl, method, body: reqBody, headers } = ctx;
+    const body = method === "POST" || method === "PUT" ? JSON.stringify(reqBody) : reqBody;
     const req = Http.request
-      .make(ctx.method)(ctx.reqUrl, {
-        body: ctx.body,
-        headers: ctx.headers,
+      .make(method)(reqUrl, {
+        body,
+        headers: headers,
         acceptJson: true,
       })
       .pipe(Http.client.fetch, this.timeoutPolicy, Http.response.json);
@@ -101,7 +103,6 @@ export class ProxyService {
           };
         }),
       );
-
     const { price } = await Effect.runPromise(req);
 
     return {
