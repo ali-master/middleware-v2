@@ -56,7 +56,7 @@ export class ProxyService {
     });
     const { reqUrl, method, body: reqBody, headers } = ctx;
     const reqBuilder = Http.request;
-    if (method === "PUT" || method === "POST") {
+    if (reqBody && (method === "PUT" || method === "POST")) {
       // @ts-ignore
       reqBuilder.setBody(JSON.stringify(reqBody));
     }
