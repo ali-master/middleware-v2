@@ -80,7 +80,7 @@ export class ProxyService {
       data: { pair },
     });
 
-    const symbol = addDashBetweenPair(pair);
+    const symbol = addDashBetweenPair(pair).toUpperCase();
     const reqUrl = this.pairUrl(symbol);
     const req = Http.request
       .get(reqUrl, {
