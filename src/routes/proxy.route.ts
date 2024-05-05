@@ -1,9 +1,9 @@
 import { Effect } from "effect";
 import {
-  SystemLogger,
-  CommonConfig,
   addDashBetweenPair,
+  CommonConfig,
   getMaxRequestTimeoutPolicy,
+  SystemLogger,
 } from "@root/utils";
 import * as Http from "@effect/platform/HttpClient";
 // Types
@@ -54,19 +54,17 @@ export class ProxyService {
     this.logger.info({
       data: ctx,
     });
-    const { reqUrl, method, body: reqBody, headers } = ctx;
-    const reqBuilder = Http.request;
-    if (reqBody && (method === "PUT" || method === "POST")) {
-      // @ts-ignore
-      reqBuilder.setBody(JSON.stringify(reqBody));
-    }
-    const req = reqBuilder
-      .make(method)(reqUrl, {
-        headers,
-      })
-      .pipe(Http.client.fetch, this.timeoutPolicy, Http.response.json);
+    const { method, headers, reqUrl, body } = ctx;
+    const fetchConfig = {
+      ...(method && { method: method }),
+      ...(body && (method === "POST" || method === "PUT") && { body: JSON.stringify(body) }),
+      ...(headers && {
+        headers: headers,
+      }),
+    };
+    const response = await fetch(reqUrl, fetchConfig);
 
-    return Effect.runPromise(req);
+    return await response.json();
   }
 
   /**
