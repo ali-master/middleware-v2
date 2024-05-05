@@ -55,14 +55,16 @@ export class ProxyService {
       data: ctx,
     });
     const { reqUrl, method, body: reqBody, headers } = ctx;
-    const body =
-      reqBody && (method === "POST" || method === "PUT") ? JSON.stringify(reqBody) : undefined;
-    const req = Http.request
-      .make(method)(reqUrl, {
-        // @ts-ignore
-        body,
-        headers: headers,
-      })
+    const reqBuilder = Http.request;
+    if (method === "PUT" || method === "POST") {
+      // @ts-ignore
+      reqBuilder.setBody(JSON.stringify(reqBody));
+    }
+    if (headers) {
+      reqBuilder.setHeaders(headers);
+    }
+    const req = reqBuilder
+      .make(method)(reqUrl)
       .pipe(Http.client.fetch, this.timeoutPolicy, Http.response.json);
 
     return Effect.runPromise(req);
