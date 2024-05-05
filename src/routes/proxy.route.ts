@@ -55,9 +55,11 @@ export class ProxyService {
       data: ctx,
     });
     const { reqUrl, method, body: reqBody, headers } = ctx;
-    const body = method === "POST" || method === "PUT" ? JSON.stringify(reqBody) : reqBody;
+    const body =
+      reqBody && (method === "POST" || method === "PUT") ? JSON.stringify(reqBody) : undefined;
     const req = Http.request
       .make(method)(reqUrl, {
+        // @ts-ignore
         body,
         headers: headers,
         acceptJson: true,
