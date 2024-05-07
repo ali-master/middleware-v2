@@ -1,6 +1,7 @@
 FROM oven/bun:alpine
-
 WORKDIR /app
+
+RUN apk --update --no-cache add curl
 
 COPY package.json .
 COPY bun.lockb .

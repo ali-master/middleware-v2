@@ -8,13 +8,13 @@ services:
     container_name: middleware
     restart: always
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/v1/health-check" ]
-      interval: 10s
-      start_period: 30s
-      retries: 10
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/v1/health-check/ws" ]
+      interval: 5s
+      start_period: 10s
+      retries: 1000
       timeout: 5s
     environment:
-        - PORT=3000
+      - PORT=3000
     ports:
       - "3000:3000"
     networks:
