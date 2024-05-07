@@ -1,10 +1,9 @@
 import { Effect } from "effect";
 import {
-  addDashBetweenPair,
-  CommonConfig,
-  filterSensitiveProps,
-  getMaxRequestTimeoutPolicy,
   SystemLogger,
+  CommonConfig,
+  addDashBetweenPair,
+  getMaxRequestTimeoutPolicy,
 } from "@root/utils";
 import * as Http from "@effect/platform/HttpClient";
 // Types
@@ -53,7 +52,7 @@ export class ProxyService {
    */
   async proxy(ctx: { reqUrl: string; method: Method; body: any; headers: any }) {
     this.logger.info({
-      data: filterSensitiveProps(ctx),
+      data: ctx,
     });
     const { method, headers, reqUrl, body } = ctx;
     const fetchConfig = {

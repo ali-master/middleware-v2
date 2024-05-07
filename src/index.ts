@@ -16,7 +16,6 @@ import {
   incrementRequestCounter,
   monitoring,
   incrementResponseDuration,
-  filterSensitiveProps,
 } from "@root/utils";
 // Exceptions
 
@@ -129,7 +128,7 @@ async function bootstrap() {
             reqRoute: request.url,
             reqMethod: request.method,
             resBody,
-            headers: filterSensitiveProps(headers),
+            headers,
           },
           `[${method}] ${reqUrl}`,
         );
@@ -143,7 +142,7 @@ async function bootstrap() {
             reqRoute: request.url,
             reqMethod: request.method,
             resBody: body,
-            headers: filterSensitiveProps(headers),
+            headers,
           },
           `[${request.method}] ${request.url}`,
         );
@@ -183,7 +182,7 @@ async function bootstrap() {
         const { reqUrl, method, body, headers } = reqBody as Record<string, string>;
         return ProxyService.proxy({
           body,
-          headers: filterSensitiveProps(headers),
+          headers: headers,
           reqUrl,
           method: method as Method,
         });
